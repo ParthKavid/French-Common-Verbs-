@@ -7,12 +7,15 @@ A comprehensive verb practice app for A1 Level French learners.
 
 ## 🎮 App Features (4 Modes)
 
-| Mode | Description |
-|------|-------------|
-| **Conjugation drills** | Verb + pronoun → type conjugation |
-| **Mistake review mode** | Practice only the verbs you got wrong |
-| **Verb matching/sorting** | Group by pattern, match forms |
-| **Translation practice** | English → French conjugation |
+| Mode                        | Sub-mode / Feature | What it does                                                                                                                                                                 |
+| --------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 💪 **Conjugation Drills**   | 📋 Sequential Mode | Practice one verb with all 6 pronouns; checklist shows progress; finish all pronouns to earn +1 count; option to skip verb; celebration when completed                       |
+|                             | 🎲 Random Mode     | Random verb + pronoun each round; no need to finish full set; fast variety practice; still tracks mistakes and accuracy                                                      |
+| ❗ **Mistake Review**        | Error Tracking     | Lists verbs with mistakes; grouped by verb and mistake count; shows recent wrong vs correct answers; practice weak verbs button; clear history; sorts by most mistakes first |
+| 📚 **Reference Table**      | Mastery Indicators | 🔴 Not practiced (0); 🟡 Learning (1–2); 🟢 Mastered (3+)                                                                                                                    |
+|                             | Table Features     | Full conjugation table (70+ verbs); all pronouns shown; 6 categories; live search; sticky headers; hover shows completion count                                              |
+| 🌍 **Translation Practice** | Sentence Practice  | English → French conjugation; random verb + pronoun; accepts full phrase or verb only; tracks accuracy; auto-advances after correct answer                                   |
+
 
 *All practice focuses on the present tense.*
 
