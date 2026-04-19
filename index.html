@@ -505,13 +505,37 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
+
+        /* Click-to-speak styling */
+        .speakable {
+            cursor: pointer;
+            border-bottom: 2px dotted #667eea;
+            transition: all 0.2s;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .speakable:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-bottom-color: #764ba2;
+        }
+
+        .speakable.speaking {
+            background: rgba(102, 126, 234, 0.4);
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🇫🇷 French Verb Master</h1>
-            <p>Present Tense Practice</p>
+            <h1>🇫🇷 <span class="speakable" onclick="speakWord('French', 'en')" title="Click to speak">French</span> <span class="speakable" onclick="speakWord('Verb Master', 'en')" title="Click to speak">Verb Master</span></h1>
+            <p><span class="speakable" onclick="speakWord('Present Tense Practice', 'en')" title="Click to speak">Present Tense Practice</span></p>
         </div>
   <div style="text-align: center;">
             <button class="btn" id="clear-history-btn">Clear History</button>        
@@ -560,6 +584,28 @@
     </div>
 
     <script>
+        // Text-to-Speech Function
+        function speakWord(text, language = 'fr') {
+            // Cancel any ongoing speech
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = language === 'french' || language === 'fr' ? 'fr-FR' : 'en-US';
+                utterance.rate = 0.9; // Slightly slower for clarity
+                
+                // Add visual feedback
+                const speakers = document.querySelectorAll('.speakable');
+                speakers.forEach(s => s.classList.remove('speaking'));
+                
+                utterance.onend = () => {
+                    speakers.forEach(s => s.classList.remove('speaking'));
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
         // Verb database with categories
         const verbDatabase = {
             essential: [
@@ -826,19 +872,19 @@
             
             area.innerHTML = modeToggleHTML + `
                 <div class="session-progress">
-                    <div class="session-title">Current Verb: ${state.currentVerb.infinitive} (${state.currentVerb.english})</div>
+                    <div class="session-title">Current Verb: ${makeSpeakable(state.currentVerb.infinitive, 'fr')} (${makeSpeakable(state.currentVerb.english, 'en')})</div>
                     <div>Complete all 6 pronouns to finish this verb!</div>
                     <div class="pronoun-checklist">
                         ${pronouns.map(p => `
                             <div class="pronoun-check ${state.currentSession.pronounsCompleted.includes(p) ? 'completed' : ''} ${p === state.currentPronoun ? 'current' : ''}">
-                                ${state.currentSession.pronounsCompleted.includes(p) ? '✓ ' : ''}${p}
+                                ${state.currentSession.pronounsCompleted.includes(p) ? '✓ ' : ''}${makeSpeakable(p, 'fr')}
                             </div>
                         `).join('')}
                     </div>
                 </div>
                 <div class="question">
-                    <div class="verb-display">${state.currentVerb.infinitive}</div>
-                    <div class="pronoun-display">${state.currentPronoun}</div>
+                    <div class="verb-display">${makeSpeakable(state.currentVerb.infinitive, 'fr')}</div>
+                    <div class="pronoun-display">${makeSpeakable(state.currentPronoun, 'fr')}</div>
                 </div>
                 <div class="input-area">
                     <input type="text" class="answer-input" id="conjugationInput" placeholder="Type conjugation..." autocomplete="off">
@@ -863,9 +909,9 @@
             
             area.innerHTML = modeToggleHTML + `
                 <div class="question">
-                    <div class="verb-display">${state.currentVerb.infinitive}</div>
-                    <div style="font-size: 1em; color: #888; margin-bottom: 10px;">${state.currentVerb.english}</div>
-                    <div class="pronoun-display">${state.currentPronoun}</div>
+                    <div class="verb-display">${makeSpeakable(state.currentVerb.infinitive, 'fr')}</div>
+                    <div style="font-size: 1em; color: #888; margin-bottom: 10px;">${makeSpeakable(state.currentVerb.english, 'en')}</div>
+                    <div class="pronoun-display">${makeSpeakable(state.currentPronoun, 'fr')}</div>
                 </div>
                 <div class="input-area">
                     <input type="text" class="answer-input" id="conjugationInput" placeholder="Type conjugation..." autocomplete="off">
@@ -1016,9 +1062,9 @@
                 <div class="mistake-list">
                     ${sortedVerbs.map(v => `
                         <div class="mistake-item">
-                            <div class="mistake-verb">${v.infinitive} (${v.english}) - ${v.mistakeCount} mistake${v.mistakeCount > 1 ? 's' : ''}</div>
+                            <div class="mistake-verb">${makeSpeakable(v.infinitive, 'fr')} (${makeSpeakable(v.english, 'en')}) - ${v.mistakeCount} mistake${v.mistakeCount > 1 ? 's' : ''}</div>
                             <div class="mistake-details">
-                                Recent errors: ${v.examples.map(e => `${e.pronoun} (you: ${e.wrong}, correct: ${e.correct})`).join(', ')}
+                                Recent errors: ${v.examples.map(e => `${makeSpeakable(e.pronoun, 'fr')} (you: ${e.wrong}, correct: ${makeSpeakable(e.correct, 'fr')})`).join(', ')}
                             </div>
                         </div>
                     `).join('')}
@@ -1128,14 +1174,14 @@
                     html += `
                         <tr class="verb-row" data-verb="${verb.infinitive}" data-english="${verb.english}">
                             <td><div class="mastery-dot" style="background: ${masteryColor};" title="${masteryLevel} (${completions} completions)"></div></td>
-                            <td class="verb-infinitive">${verb.infinitive}</td>
-                            <td class="verb-english">${verb.english}</td>
-                            <td class="conjugation-cell">${verb.conjugations.je}</td>
-                            <td class="conjugation-cell">${verb.conjugations.tu}</td>
-                            <td class="conjugation-cell">${verb.conjugations.il}</td>
-                            <td class="conjugation-cell">${verb.conjugations.nous}</td>
-                            <td class="conjugation-cell">${verb.conjugations.vous}</td>
-                            <td class="conjugation-cell">${verb.conjugations.ils}</td>
+                            <td class="verb-infinitive">${makeSpeakable(verb.infinitive, 'fr')}</td>
+                            <td class="verb-english">${makeSpeakable(verb.english, 'en')}</td>
+                            <td class="conjugation-cell">${makeSpeakable(verb.conjugations.je, 'fr')}</td>
+                            <td class="conjugation-cell">${makeSpeakable(verb.conjugations.tu, 'fr')}</td>
+                            <td class="conjugation-cell">${makeSpeakable(verb.conjugations.il, 'fr')}</td>
+                            <td class="conjugation-cell">${makeSpeakable(verb.conjugations.nous, 'fr')}</td>
+                            <td class="conjugation-cell">${makeSpeakable(verb.conjugations.vous, 'fr')}</td>
+                            <td class="conjugation-cell">${makeSpeakable(verb.conjugations.ils, 'fr')}</td>
                         </tr>
                     `;
                 });
@@ -1203,7 +1249,7 @@
             const area = document.getElementById('practiceArea');
             area.innerHTML = `
                 <div class="question">
-                    <div class="translation-prompt">"${sentence}"</div>
+                    <div class="translation-prompt">"${makeSpeakable(sentence, 'en')}"</div>
                     <div style="font-size: 1.1em; color: #888; margin-top: 10px;">Translate to French (present tense)</div>
                 </div>
                 <div class="input-area">
@@ -1268,6 +1314,11 @@
             const shuffled = [...state.allVerbs].sort(() => Math.random() - 0.5);
             return shuffled.slice(0, count);
         }
+
+        function makeSpeakable(text, language = 'fr') {
+            return `<span class="speakable" onclick="speakWord('${text.replace(/'/g, "\\'")}', '${language}')" title="Click to speak">${text}</span>`;
+        }
+
 
            document.getElementById('clear-history-btn').onclick = function() {
         if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
